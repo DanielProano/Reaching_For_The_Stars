@@ -1,0 +1,14 @@
+# NetBeans specific files
+nbproject/
+build/
+dist/
+
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# Temporary files
+*.tmp
+*.log

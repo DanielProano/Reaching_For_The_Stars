@@ -1,0 +1,52 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 22, 2025, 2:26:07 PM
+    Author     : smart
+*/
+
+select {
+    height: 30px;
+    width: 200px;
+}
+
+input {
+    height: 20px;
+    width: 200px;
+}
+
+legend-container {
+    text-align: center;
+}
+
+legend {
+    display: inline-block;
+}
+
+body {
+    background-image: url('planets3.jpg');
+    background-size: cover;
+    margin: 0;
+    height: 100vh;
+}
+
+h1 {
+    color: white;
+    font-family: cursive; 
+}
+
+h3 {
+    color: white;
+    font-family: cursive;
+}
+
+input[type="submit"] {
+    width: 200px;
+    height: 40px;
+}
+p {
+    color: white;
+    font-family: cursive;
+}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css_page1.css" rel="stylesheet">
+    <title>Exoplanet Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    
+    <form action="ai_photo.jsp?text_prompt='create a planet with a gritty surface with water that resembles a combination of jupiter and earth'" method="POST">
+    <script>
+        // Exoplanet data array
+        const exoplanetData = [
+            {
+                planetName: "Exoplanet1",
+                hostStar: "Star1",
+                numStars: 1,
+                numPlanets: 1,
+                numMoons: 2,
+                flag: "Earth-like",
+                discoveryYear: 2020,
+                orbitPeriod: 365,
+                orbitRadius: 1,
+                planetRadius: 1,
+                planetMass: 1,
+                planetDensity: 5.5,
+                eccentricity: 0.2, // Added eccentricity for elliptical orbits
+                inclination: 0,
+                starCLass: "G",
+                starTemperature: 5778,
+                starRadius: 1,
+                starMass: 1,
+                starLum: 1,
+                starGravity: 9.81,
+                starAge: 5,
+                starDensity: 1.41,
+                distanceToPlanet: 4.24
+            }
+        ];
+
+        if (exoplanetData && exoplanetData.length > 0) {
+            console.log(exoplanetData);
+
+            // Create a scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Add OrbitControls
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // Smooth rotation
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+            controls.maxPolarAngle = Math.PI / 2; // Restrict vertical movement
+
+            // Ambient light
+            const light = new THREE.AmbientLight(0x404040, 1);
+            scene.add(light);
+
+            camera.position.set(0, 10, 30);
+
+            // Store planet objects for movement in animation loop
+            const planets = [];
+            const textureLoader = new THREE.TextureLoader();
+
+            // Handle user input for speed, rotation, and zoom
+            let orbitSpeed = 0.001; // Default orbital speed
+            let zoomSpeed = 0.1;    // Default zoom speed
+            let rotationSpeed = 0.02; // Default rotation speed
+
+            // Add event listeners for controls
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'ArrowUp') {
+                    camera.rotation.x -= rotationSpeed; // Rotate upwards
+                } else if (event.key === 'ArrowDown') {
+                    camera.rotation.x += rotationSpeed; // Rotate downwards
+                } else if (event.key === 'ArrowLeft') {
+                    camera.rotation.y -= rotationSpeed; // Rotate left
+                } else if (event.key === 'ArrowRight') {
+                    camera.rotation.y += rotationSpeed; // Rotate right
+                } else if (event.key === '+' || event.key === '=') {
+                    camera.position.z -= zoomSpeed; // Zoom in
+                } else if (event.key === '-') {
+                    camera.position.z += zoomSpeed; // Zoom out
+                } else if (event.key === 'w' || event.key === 'W') {
+                    orbitSpeed += 0.0001; // Increase speed
+                } else if (event.key === 's' || event.key === 'S') {
+                    orbitSpeed -= 0.0001; // Decrease speed
+                    if (orbitSpeed < 0) orbitSpeed = 0; // Prevent negative speed
+                }
+            });
+
+            exoplanetData.forEach(data => {
+                const { 
+                    planetName,
+                    hostStar,
+                    orbitPeriod,
+                    orbitRadius,
+                    planetRadius,
+                    starCLass,
+                    starRadius,
+                    eccentricity
+                } = data;
+
+                // Planet
+                const planetGeometry = new THREE.SphereGeometry(planetRadius, 200, 200);
+                const planetTexture = textureLoader.load(`https://i.imgur.com/6uxNerY.jpeg`); // Assuming textures are named after planetName
+
+                const planetMaterial = new THREE.MeshStandardMaterial({ 
+                    map: planetTexture,
+                    roughness: 0.8,  // Adjust surface reflection
+                    metalness: 0.1   // Slight metallic feel
+                });
+                const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+                const speed = (2 * Math.PI * orbitRadius) / orbitPeriod; // speed based on orbital period
+                planet.position.set(orbitRadius * 10, 0, 0); // Initial position on orbit
+                planets.push({ planet, speed, eccentricity }); // Store planet and its speed
+
+                scene.add(planet);
+
+                // Star
+                let starColor = starCLass === 'G' ? 0xFFD700 : 0xFF4500; // Yellow for G, Orange for K
+                const starGeometry = new THREE.SphereGeometry(starRadius * 3, 200, 200);
+                const starTexture = textureLoader.load(`https://i.imgur.com/XdRTvzj.jpeg`); // Assuming textures are named after planetName
+
+                const starMaterial = new THREE.MeshStandardMaterial({ 
+                    map: starTexture,
+                    emissive: starColor, // Makes it glow 
+                    emissiveIntensity: 0.55, 
+                    roughness: 0.8, 
+                    metalness: 0.1 
+                });
+
+                const star = new THREE.Mesh(starGeometry, starMaterial);
+                star.position.set(0, 0, 0);
+                scene.add(star);
+
+                // Add Light to Simulate Star Illumination
+                const starLight = new THREE.PointLight(starColor, 3, 50); // Color, Intensity, Distance
+                starLight.position.set(0, 0, 0);
+                scene.add(starLight);
+
+                const glowTexture = textureLoader.load("https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/lensflare/lensflare0_alpha.png");
+
+                const glowMaterial = new THREE.SpriteMaterial({ 
+                    map: glowTexture, 
+                    color: starColor, 
+                    transparent: true, 
+                    blending: THREE.AdditiveBlending, // Makes it actually glow
+                    opacity: 1 
+                });
+
+                const glowSprite = new THREE.Sprite(glowMaterial);
+                glowSprite.scale.set(starRadius * 50, starRadius * 50, 15); // Adjust glow size
+                glowSprite.position.set(0, 0, 0); // Position glow at the center of the star
+                star.add(glowSprite);
+            }); 
+
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update(); // Update camera controls
+
+                // Time in seconds
+                const time = Date.now() * 0.1;
+
+                // Update planet positions based on their orbital speed and eccentricity (elliptical movement)
+                planets.forEach(({ planet, speed, eccentricity }) => {
+                    const angle = speed * time; // Calculate angle based on speed and time
+                    const orbitX = (10 + eccentricity * 10) * Math.cos(angle);  // Elliptical orbit X
+                    const orbitZ = (10 - eccentricity * 10) * Math.sin(angle);  // Elliptical orbit Z
+                    planet.position.x = orbitX;
+                    planet.position.z = orbitZ;  // Update Z position
+                });
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        } else {
+            console.error("Exoplanet data not available.");
+        }
+    </script>
+    <center> <input type="submit" value='See a close-up!'> </center>
+</form>
+</body>
+</html>
