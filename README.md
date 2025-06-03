@@ -21,7 +21,7 @@ we made a webpage that allows a user to search NASA's Astronomical Archive. This
 
 # Simulation
 
-We also built a working simulation of what an Exoplanet might look-like with OpenGL to create a planetary model system.
+We also built a working simulation of what an Exoplanet might look-like with THREE.js to create a planetary model system.
 
 # Attempted but buggy
 
