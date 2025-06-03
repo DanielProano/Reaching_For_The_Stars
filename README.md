@@ -1,3 +1,5 @@
+![Reaching_for the_Stars](https://github.com/user-attachments/assets/4c42d5e0-1c1b-4b78-b844-501bd29a0d9e)
+
 # Reaching_For_The_Stars
 
 A dynamic web application that uses NASA's Astronomical Archiveto gather information about exoplanets and present them in the form of interactive simulations. 
